@@ -1,0 +1,386 @@
+---
+title: "A classification framework for forecast-model selection"
+author: 
+- Thiyanga S Talagala \newline
+- Rob J Hyndman \newline
+- George Athanasopoulos
+institute: |
+        | Monash University, Australia
+date: "Joint Statistical Meetings, 2018"
+output: 
+  beamer_presentation:
+     theme: "Warsaw"
+     includes:
+        in_header: header_pagenrs.tex
+---
+
+```{r initial, echo = FALSE, cache = TRUE, include = FALSE}
+library(knitr)
+library(pander)
+library(seer)
+library(Mcomp)
+# Set so that long lines in R will be wrapped:
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)
+opts_chunk$set(fig.lp = '')
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  fig.path = "figure/",
+  cache.path = "cache/",
+  cache = TRUE,
+  fig.show = "hold",
+  external = TRUE,
+  dev = "png"
+)
+
+```
+
+```{r set-options, echo=FALSE, cache=TRUE}
+options(width = 50)
+```
+
+
+# 
+
+  \centerline{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{figures/mobile.jpg}}
+
+
+#
+
+  \centerline{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{figures/logistics.jpg}}
+  
+
+# Time series features
+
+\begin{block}{Objective}
+Develop a framework that automates the selection of the most appropriate forecasting method for a given time series by using an array of \textcolor{red}{features} computed from the time series.
+\end{block}
+
+\pause
+\begin{itemize}[<+->]
+
+\item \textbf{Basic idea:}
+  
+  Transform a given time series $y=\{y_1, y_2, \cdots, y_n\}$ to a feature vector $F = (f_1(y), f_2(y), \cdots, f_p(y))'$. 
+
+\item Examples for time series features
+
+\begin{itemize}[<+->]
+\vfill\item strength of trend
+\vfill\item strength of seasonality
+\vfill\item lag-1 autocorrelation
+\vfill\item spectral entropy
+
+\end{itemize}
+
+\end{itemize}
+
+
+# Feature-space of time series
+
+\begin{block}{STL-decomposition}
+$Y_t=T_t+S_t+R_t$
+\end{block}
+
+\begin{itemize}
+\vfill\item strength of trend: $1-\frac{Var(R_t)}{Var(Y_t-S_t)}$
+\vfill\item strength of seasonality: $1-\frac{Var(R_t)}{Va(Y_t-T_t)}$
+\end{itemize}
+
+\begincols
+\begincol{.48\textwidth}
+
+
+```{r, warning=FALSE, message=F, echo=FALSE, fig.height=10}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] + ggtitle(series_id[i])+theme(title =element_text(size=30, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+
+```
+
+\endcol \begincol{.48\textwidth}
+
+\pause
+
+```{r fig2, fig.height=10, message=F, echo=F, warning=F}
+df <- tsfeatures(six_series, c("stl_features")) %>%
+  select(trend, seasonal_strength) %>%
+  rename(seasonality = seasonal_strength) %>%
+  replace_na(list(seasonality = 0))
+df$id <- names(six_series)
+ggplot(df, aes(x = trend, y = seasonality)) +
+  geom_point(size = 5, color = 'red') +
+  xlim(0, 1) + ylim(0, 1) +
+  coord_fixed() +
+  geom_text_repel(
+    aes(label = id),
+    colour = "black",
+    size = 10,
+    box.padding = unit(0.5, "lines")
+  ) +
+  theme(legend.position = "none")
+```
+
+  \endcol
+\endcols
+
+# Time series features
+
+
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+   \begin{itemize}
+   \item length
+    \item strength of seasonality
+    \item strength of trend
+    \item linearity
+    \item curvature
+    \item spikiness
+    \item stability
+    \item lumpiness
+    \item first ACF value of remainder series
+    \item parameter estimates of Holt's linear trend method
+    \end{itemize} 
+\end{column}
+\begin{column}{0.48\textwidth}
+   \begin{itemize}
+    \item spectral entropy
+    \item Hurst exponent
+    \item nonlinearity
+    \item parameter estimates of Holt-Winters' additive method
+    \item unit root test statistics
+    \item first ACF value of residual series of linear trend model 
+    \item ACF and PACF based features - calculated on both the raw and differenced series
+    \end{itemize} 
+\end{column}
+\end{columns}
+
+# Methodology: FFORMS
+
+**FFORMS:** **F**eature-based **FOR**ecast **M**odel **S**election
+
+\textcolor{red}{Offline}
+
+- A classification algorithm (the meta-learner) is trained.
+
+\textcolor{red}{Online}
+
+- Calculate the features of a time series and use the pre-trained classifier to identify the best forecasting method.
+
+
+# FFORMS: population
+
+ \centerline{\includegraphics[width=\paperwidth]{figures/fw1.png}}
+
+# FFORMS: observed sample
+
+ \centerline{\includegraphics[width=\paperwidth]{figures/fw2.png}}
+ 
+# FFORMS: simulated time series
+
+ \centerline{\includegraphics[width=\paperwidth]{figures/fw3.png}}
+ 
+# FFORMS: reference set
+ 
+ \centerline{\includegraphics[width=\paperwidth]{figures/fw4.png}}
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw5.png}}
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw6.png}}
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw7.png}}
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw8.png}}
+
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw9.png}}
+
+# FFORMS: Meta-data
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw10.png}}
+
+# FFORMS: Random-forest classifier
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw11.png}}
+
+
+# FFORMS: "online" part of the algorithm
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw12.png}}
+
+
+# FFORMS: "online" part of the algorithm
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw13.png}}
+
+# FFORMS: "online" part of the algorithm
+
+\centerline{\includegraphics[width=\paperwidth]{figures/fw14.png}}
+
+# Application to M competition data
+
+- Proposed algorithm is applied to yearly, quarterly and monthly series separately.
+
+- We run two experiments for each case.
+
+\begin{table}[!htp]
+\centering\tiny\tabcolsep=0.2cm
+\def\yes{$\checkmark$}
+\captionsetup{labelformat=empty}
+\label{tbl:Mcomps}
+\begin{tabular}{lrrrrr@{\hspace*{0.2cm}}rrrr}
+\toprule
+                &  \multicolumn{ 4}{c}{Experiment 1} & & \multicolumn{ 4}{c}{Experiment 2} \\
+                &    Source  &    Y  & Q  &    M &            &    Source  &    Y  & Q  &    M \\\cline{2-5}\cline{7-10}
+& & & & & & & & & \\[-0.1cm]
+\colorbox{black}{\color{white}{Observed series}} &         M1 &       181 &        203 &        617 &            &         M3 &        645 &        756 &       1428 \\
+\colorbox{ao(english)}{Simulated series} &          &       362000 &        406000 &        123400 &            &          &        1290000 &        1512000&       285600 \\
+\colorbox{orange}{New series} &         M3 &    645 &       756 &       1428 &            &         M1 &        181 &        203 &       617 \\
+\bottomrule
+\end{tabular}
+\end{table}
+# Experiment 1: Distribution of time series in the PCA space
+\colorbox{black}{\color{white}{observed - M1}} \colorbox{ao(english)}{simulated} \colorbox{orange}{new - M3}
+  \centerline{\includegraphics[width=\textwidth,height=7.5cm,keepaspectratio]{figures/exp1pca-1.pdf}}
+
+
+# Experiment 2: Distribution of time series in the PCA space
+\colorbox{black}{\color{white}{observed - M3}} \colorbox{ao(english)}{simulated} \colorbox{aureolin}{subset} \colorbox{orange}{new - M1}
+  \centerline{\includegraphics[width=\textwidth,height=7.5cm,keepaspectratio]{figures/exp2pca-1.pdf}}
+
+# Results: Yearly
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+method = c("RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "Theta",
+           "RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "Theta")
+Rank = c(1.50, 1.50, 3.33, 5.00, 8.00, 7.00, 3.67, 6.00,
+         3.50, 2.50, 5.83, 4.67, 9.00, 8.00, 1.00, 3.50)
+class=c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1)
+df <- data.frame(method=method, Rank=Rank, class=class)
+ggplot(data=df, aes(x=method,y=Rank,fill=factor(class))) +
+  geom_bar(position="dodge",stat="identity") + 
+  coord_flip() +
+   scale_x_discrete(
+    limits=c("WN", "RW", "auto.arima", "ets", "Theta", "RWD", "RF-class priors", "RF-unbalanced"),
+    labels=c("WN", "RW", "auto.arima", "ets", "Theta", "RWD", "RF-class priors", "RF-unbalanced")
+    ) + scale_fill_brewer(breaks=c(1,0), 
+    labels=c("Experiment 1 (new: M3)","Experiment 2 (new: M1)")
+, palette = "Set1") + 
+  theme(axis.title.y=element_blank(), legend.title=element_blank(),
+            text = element_text(size=20))
+```
+
+# Results: Quarterly
+
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+method = c("RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "STL-AR", "Theta", "Snaive",
+           "RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "STL-AR", "Theta", "Snaive")
+Rank = c(1.00, 2.63, 5.25, 3.00, 10.00, 7.50, 5.38, 8.63, 3.88, 7.75, 2.25,
+3.13, 4.75, 3.75, 10.00, 7.00, 6.50, 8.34, 2.50, 6.75)
+class=c(0,0,0,0,0,0,0,0,0, 0, 1,1,1,1,1,1,1,1, 1, 1)
+df <- data.frame(method=method, Rank=Rank, class=class)
+ggplot(data=df, aes(x=method,y=Rank,fill=factor(class))) +
+  geom_bar(position="dodge",stat="identity") + 
+  coord_flip() +
+   scale_x_discrete(
+    limits=c("WN","RW",  "RWD","STL-AR", "Snaive", "auto.arima", "ets","Theta", "RF-class priors", "RF-unbalanced"),
+    labels=c("WN",  "RW", "RWD","STL-AR", "Snaive", "auto.arima", "ets","Theta", "RF-class priors", "RF-unbalanced")
+    ) + scale_fill_brewer(breaks=c(1,0), 
+    labels=c("Experiment 1 (new: M3)","Experiment 2 (new: M1)")
+, palette = "Set1") + 
+  theme(axis.title.y=element_blank(), legend.title=element_blank(),
+        text = element_text(size=20))
+```
+
+# Results: Monthly
+
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+method = c("RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "STL-AR", "Theta", "Snaive",
+           "RF-unbalanced", "RF-class priors", "auto.arima", "ets", "WN", "RW", "RWD", "STL-AR", "Theta", "Snaive")
+Rank = c(1.77, 2.83, 4.94, 3.44, 10.00, 7.25, 8.61, 7.38, 2.27, 6.47, 3.22, 2.00, 2.83, 2.72, 10.00, 8.03, 6.89, 7.89, 4.22, 7.19)
+class=c(0,0,0,0,0,0,0,0,0, 0, 1,1,1,1,1,1,1,1, 1, 1)
+df <- data.frame(method=method, Rank=Rank, class=class)
+ggplot(data=df, aes(x=method,y=Rank,fill=factor(class))) +
+  geom_bar(position="dodge",stat="identity") + 
+  coord_flip() +
+   scale_x_discrete(
+    limits=c("WN","RW", "RWD","STL-AR",  "Snaive", "auto.arima", "ets","Theta", "RF-class priors", "RF-unbalanced"),
+    labels=c("WN","RW", "RWD", "STL-AR",  "Snaive", "auto.arima", "ets","Theta", "RF-class priors", "RF-unbalanced")
+    ) + scale_fill_brewer(breaks=c(1,0), 
+    labels=c("Experiment 1 (new: M3)","Experiment 2 (new: M1)")
+, palette = "Set1") + 
+  theme(axis.title.y=element_blank(), legend.title=element_blank(),
+        text = element_text(size=20))
+```
+
+
+# Discussion and Conclusions
+
+\begin{itemize}[<+->]
+
+\vfill\item FFORMS: framework for forecast model selection using meta-learning based on time series features.
+
+\vfill\item FFORMS algorithm uses the knowledge of the past performance of candidate forecast models on a collection of time series in order to identify the best forecasting method for a new series. 
+
+\vfill\item For real-time forecasting, our framework involves only the calculation of features, the selection of a forecast method based on the FFORMS random forest classifier, and the calculation of the forecasts from the chosen model.
+
+\vfill\item We have also introduced a simple set of time series features that are useful in identifying the "best" forecast method for a given time series.
+
+\end{itemize}
+
+
+# R package: seer
+
+ \vspace{0.15cm}
+\centerline{\includegraphics[width=\textwidth,height=3.5cm,keepaspectratio]{figures/seer.png}}
+\vspace{0.3cm}
+ \centerline{available at: \textcolor{blue}{\underline{https://github.com/thiyangt/seer}}}
+
+## Installation
+
+```r
+devtools::install_github("thiyangt/seer")
+library(seer)
+```
+\pause
+
+##
+paper: https://robjhyndman.com/publications/fforms/
+
+##
+
+Email: thiyanga.talagala@monash.edu
+

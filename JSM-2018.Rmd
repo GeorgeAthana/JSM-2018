@@ -267,9 +267,26 @@ ggplot(df, aes(x = trend, y = seasonality)) +
 \bottomrule
 \end{tabular}
 \end{table}
+
 # Experiment 1: Distribution of time series in the PCA space
-\colorbox{black}{\color{white}{observed - M1}} \colorbox{ao(english)}{simulated} \colorbox{orange}{new - M3}
+
+\colorbox{black}{\color{white}{observed - M1}} 
+
+  \centerline{\includegraphics[width=\textwidth,height=7.5cm,keepaspectratio]{figures/observed.pdf}}
+
+# Experiment 1: Distribution of time series in the PCA space
+
+\colorbox{black}{\color{white}{observed - M1}}\colorbox{ao(english)}{simulated}
+
+  \centerline{\includegraphics[width=\textwidth,height=7.5cm,keepaspectratio]{figures/simulated.pdf}}
+
+
+
+# Experiment 1: Distribution of time series in the PCA space
+\colorbox{black}{\color{white}{observed - M1}}\colorbox{ao(english)}{simulated}\colorbox{orange}{new - M3}
   \centerline{\includegraphics[width=\textwidth,height=7.5cm,keepaspectratio]{figures/exp1pca-1.pdf}}
+
+
 
 
 # Experiment 2: Distribution of time series in the PCA space
@@ -381,6 +398,9 @@ library(seer)
 paper: https://robjhyndman.com/publications/fforms/
 
 ##
+email: thiyanga.talagala@monash.edu
 
-Email: thiyanga.talagala@monash.edu
+##
+
+twitter: \href{http://twitter.com/thiyangt}{@thiyangt}
 

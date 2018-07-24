@@ -57,16 +57,32 @@ M3YPCA <- data.frame(PC1=simM3YPCA[,1], PC2=simM3YPCA[,2], PC3=simM3YPCA[,3])
 pcaALLM1Y <- bind_rows(SimulatedPCAM1Y, M3YPCA, M1Ypca, .id="source")
 
 # observed series only
-head(M1Ypca)
-pc1_m1y <- ggplot(M1Ypca, aes(x=PC1, y=PC2)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-pc2_m1y <- ggplot(M1Ypca, aes(x=PC1, y=PC3)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-pc3_m1y <- ggplot(M1Ypca, aes(x=PC2, y=PC3)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+pc1_m1y <- ggplot(pcaALLM1Y, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Yearly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 ggsave("figures/pc1_m1y.png",  width = 5, height = 4)
+pc2_m1y <- ggplot(pcaALLM1Y, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
 ggsave("figures/pc2_m1y.png",  width = 5, height = 4)
+pc3_m1y <- ggplot(pcaALLM1Y, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 ggsave("figures/pc3_m1y.png",  width = 5, height = 4)
+
+pc1_m1ys <- ggplot(pcaALLM1Y, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Yearly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc1_m1ys.png",  width = 5, height = 4)
+pc2_m1ys <- ggplot(pcaALLM1Y, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5,size = 20, face = "bold"))
+ggsave("figures/pc2_m1ys.png",  width = 5, height = 4)
+pc3_m1ys <- ggplot(pcaALLM1Y, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc3_m1ys.png",  width = 5, height = 4)
+
 
 
 pca1M1Y <- ggplot(pcaALLM1Y, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
@@ -104,18 +120,34 @@ simM3QPCA <- scale(projectM3Q, pcaM1Q$center,pcaM1Q$scale) %*% pcaM1Q$rotation
 M3QPCA <- data.frame(PC1=simM3QPCA[,1], PC2=simM3QPCA[,2], PC3=simM3QPCA[,3])
 pcaALLM1Q <- bind_rows(SimulatedPCAM1Q, M3QPCA, M1Qpca, .id="source")
 
-pc1_m1q <- ggplot(M1Qpca, aes(x=PC1, y=PC2)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-pc2_m1q <- ggplot(M1Qpca, aes(x=PC1, y=PC3)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-pc3_m1q <- ggplot(M1Qpca, aes(x=PC2, y=PC3)) + geom_point()+ theme(legend.position="none")+
-  theme(aspect.ratio = 1)+ggtitle("Yearly")+theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-ggsave("figures/pc1_m1q.png",  width = 5, height = 4)
+
+
+pc1_m1q <- ggplot(pcaALLM1Q, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Quarterly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc1_m1q.png", width = 5, height = 4)
+pc2_m1q <- ggplot(pcaALLM1Q, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 ggsave("figures/pc2_m1q.png",  width = 5, height = 4)
+pc3_m1q <- ggplot(pcaALLM1Q, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 ggsave("figures/pc3_m1q.png",  width = 5, height = 4)
 
 
-
+pc1_m1qs <- ggplot(pcaALLM1Q, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Quarterly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc1_m1qs.png", width = 5, height = 4)
+pc2_m1qs <- ggplot(pcaALLM1Q, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc2_m1qs.png",  width = 5, height = 4)
+pc3_m1qs <- ggplot(pcaALLM1Q, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc3_m1qs.png",  width = 5, height = 4)
 
 
 
@@ -132,6 +164,7 @@ pca3M1Q <- ggplot(pcaALLM1Q, aes(x=PC2, y=PC3, color=source)) + geom_point()+ th
   theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
 ggsave("figures/pca3M1Q.png",  width = 5, height = 4)
 
+# Monthly data
 
 pcaM1MDF <- filter(monthly_exp1, datasource=="M1") # Monthly-E1
 pcaM1MDFvariables <- pcaM1MDF[,1:30]
@@ -152,6 +185,36 @@ projectM3M <- M3M[, 1:30]
 simM3MPCA <- scale(projectM3M, pcaM1M$center,pcaM1M$scale) %*% pcaM1M$rotation
 M3MPCA <- data.frame(PC1=simM3MPCA[,1], PC2=simM3MPCA[,2], PC3=simM3MPCA[,3])
 pcaALLM1M <- bind_rows(SimulatedPCAM1M, M3MPCA, M1Mpca, .id="source")
+
+pc1_m1m <- ggplot(pcaALLM1M, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Monthly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc1_m1m.png", width = 5, height = 4)
+pc2_m1m <- ggplot(pcaALLM1M, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc2_m1m.png", width = 5, height = 4)
+pc3_m1m <- ggplot(pcaALLM1M, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("NA", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc3_m1m.png", width = 5, height = 4)
+
+
+pc1_m1ms <- ggplot(pcaALLM1M, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("Monthly")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc1_m1ms.png", width = 5, height = 4)
+pc2_m1ms <- ggplot(pcaALLM1M, aes(x=PC1, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc2_m1ms.png", width = 5, height = 4)
+pc3_m1ms <- ggplot(pcaALLM1M, aes(x=PC2, y=PC3, color=source)) + geom_point()+ theme(legend.position="none")+
+  scale_color_manual(values=c("forestgreen", "NA", "black"))+theme(aspect.ratio = 1)+ggtitle("")+
+  theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+ggsave("figures/pc3_m1ms.png", width = 5, height = 4)
+
+
+
 pca1M1M <- ggplot(pcaALLM1M, aes(x=PC1, y=PC2, color=source)) + geom_point()+ theme(legend.position="none")+
   scale_color_manual(values=c("forestgreen", "firebrick1", "black"))+theme(aspect.ratio = 1)+ggtitle("Monthly")+
   theme(plot.margin=grid::unit(c(0,0,0,0), "mm"), plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))

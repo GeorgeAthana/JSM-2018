@@ -1,0 +1,64 @@
+---
+
+output: pdf_document
+---
+
+```{r initial, echo = FALSE, cache = FALSE, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  fig.path = "figure/",
+  cache.path = "cache/",
+  fig.align = "center",
+  fig.show = "hold",
+  cache = TRUE,
+  external = TRUE,
+  dev = "pdf",
+  fig.height = 5,
+  fig.width = 8,
+  out.width = "\\textwidth"
+)
+```
+
+
+```{r}
+library(grid)
+library(png)
+```
+
+```{r  message=FALSE, warning=FALSE,fig.width=11, fig.asp = .9}
+img1 <- rasterGrob(as.raster(readPNG("figures/pc1_m1y.png")),interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("figures/pc2_m1y.png")),interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("figures/pc3_m1y.png")),interpolate = FALSE)
+img4 <- rasterGrob(as.raster(readPNG("figures/pc1_m1q.png")),interpolate = FALSE)
+img5 <- rasterGrob(as.raster(readPNG("figures/pc2_m1q.png")),interpolate = FALSE)
+img6 <- rasterGrob(as.raster(readPNG("figures/pc3_m1q.png")),interpolate = FALSE)
+img7 <- rasterGrob(as.raster(readPNG("figures/pc1_m1m.png")), interpolate = FALSE)
+img8 <- rasterGrob(as.raster(readPNG("figures/pc2_m1m.png")), interpolate = FALSE)
+img9 <- rasterGrob(as.raster(readPNG("figures/pc3_m1m.png")), interpolate = FALSE)
+#grid.arrange(img1, img2, img3, img4, img5, img6, img7, img8, img9, ncol = 3)
+#library(cowplot)
+gridExtra::grid.arrange(img1, img4, img7, img2, img5, img8, img3, img6, img9, nrow = 3, ncol=3)
+
+```
+
+
+```{r  message=FALSE, warning=FALSE,fig.width=11, fig.asp = .9}
+library(grid)
+library(png)
+img1s <- rasterGrob(as.raster(readPNG("figures/pc1_m1ys.png")),interpolate = FALSE)
+img2s <- rasterGrob(as.raster(readPNG("figures/pc2_m1ys.png")),interpolate = FALSE)
+img3s <- rasterGrob(as.raster(readPNG("figures/pc3_m1ys.png")),interpolate = FALSE)
+img4s <- rasterGrob(as.raster(readPNG("figures/pc1_m1qs.png")),interpolate = FALSE)
+img5s <- rasterGrob(as.raster(readPNG("figures/pc2_m1qs.png")),interpolate = FALSE)
+img6s <- rasterGrob(as.raster(readPNG("figures/pc3_m1qs.png")),interpolate = FALSE)
+img7s <- rasterGrob(as.raster(readPNG("figures/pc1_m1ms.png")), interpolate = FALSE)
+img8s <- rasterGrob(as.raster(readPNG("figures/pc2_m1ms.png")), interpolate = FALSE)
+img9s <- rasterGrob(as.raster(readPNG("figures/pc3_m1ms.png")), interpolate = FALSE)
+#grid.arrange(img1, img2, img3, img4, img5, img6, img7, img8, img9, ncol = 3)
+#library(cowplot)
+gridExtra::grid.arrange(img1s, img4s, img7s, img2s, img5s, img8s, img3s, img6s, img9s, nrow = 3, ncol=3)
+
+```
